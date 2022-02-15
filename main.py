@@ -1,13 +1,80 @@
 from db_connection import connect
+from flask import Flask, jsonify, make_response, abort
 
-genus = input("Podaj genus: ")
 
-query = f"""SELECT * FROM species WHERE genus = '{genus}';"""
+app = Flask(__name__)
 
-rows = connect(query)
+@app.errorhandler(400)
+def not_found(error):
+    return make_response(jsonify({'error': 'Bad request'}), 400)
 
-try:
-    for row in rows:
-        print(row)
-except:
-    print('Query error')
+@app.errorhandler(404)
+def not_found(error):
+    return make_response(jsonify({'error': 'Not found'}), 404)
+
+@app.route('/tarantulas')
+def index():
+    routes = dict(
+        listOfFamilies = '[hostname]/tarantulas/families',
+    )
+    return(jsonify(routes))
+
+@app.route('/tarantulas/families')
+def get_families():
+    query = """SELECT family, COUNT(species) FROM species GROUP BY family ORDER BY 1;"""
+    rows = connect(query)
+    families = {
+        'allFamilies': [
+            {
+            'name': row[0],
+            'numberOfSpecies': row[1],
+            'genusList': f'/tarantulas/family/{row[0].lower()}'
+            }
+        for row in rows
+    ]}
+    return jsonify(families)
+
+@app.route('/tarantulas/family/<name>')
+def get_family(name):
+    if not name.isalpha(): abort(400)
+    name = name.capitalize()
+    query = f"""SELECT genus, COUNT(species) FROM species WHERE family = '{name}' GROUP BY genus ORDER BY 1;"""
+    rows = connect(query)
+    if len(rows) < 1: abort(404)
+    family = {
+        name: [
+            {
+                'family': name,
+                'genus': row[0],
+                'numberOfSpecies': row[1],
+                'speciesList': f'/tarantulas/genus/{row[0].lower()}'
+            }
+            for row in rows
+        ]
+    }
+    return jsonify(family)
+
+
+
+@app.route('/tarantulas/genus/<name>')
+def get_genus(name):
+    if not name.isalpha(): abort(400)
+    name = name.capitalize()
+    query = f"""SELECT family, species, country FROM species WHERE genus = '{name}' ORDER BY 1;"""
+    rows = connect(query)
+    if len(rows) < 1: abort(404)
+    genus = {
+        name: [
+            {
+                'family': row[0],
+                'genus': row[1],
+                'country': row[2]
+            }
+            for row in rows
+        ]
+    }
+    return jsonify(genus)
+
+
+if __name__ == '__main__':
+    app.run(debug=True, port=8000)
