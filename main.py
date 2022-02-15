@@ -14,9 +14,12 @@ def not_found(error):
 
 @app.route('/tarantulas')
 def index():
-    routes = dict(
-        listOfFamilies = '[hostname]/tarantulas/families',
-    )
+    routes = {
+        'list of families': '[hostname]/tarantulas/families',
+        'list of genus in family': '[hostname]/tarantulas/family/<name of family>',
+        'list of species in genus': '[hostname]/tarantulas/genus/<name of genus>',
+        'list of species in location': '[hostname]/tarantulas/location/<name of location>',
+    }
     return(jsonify(routes))
 
 @app.route('/tarantulas/families')
@@ -54,8 +57,6 @@ def get_family(name):
     }
     return jsonify(family)
 
-
-
 @app.route('/tarantulas/genus/<name>')
 def get_genus(name):
     if not name.isalpha(): abort(400)
@@ -67,8 +68,27 @@ def get_genus(name):
         name: [
             {
                 'family': row[0],
-                'genus': row[1],
-                'country': row[2]
+                'species': row[1],
+                'location': row[2]
+            }
+            for row in rows
+        ]
+    }
+    return jsonify(genus)
+
+@app.route('/tarantulas/location/<name>')
+def get_species_by_loacation(name):
+    if not name.isalpha(): abort(400)
+    name = name.capitalize()
+    query = f"""SELECT family, species, country FROM species WHERE '{name}' = ANY(country) ORDER BY 2;"""
+    rows = connect(query)
+    if len(rows) < 1: abort(404)
+    genus = {
+        name: [
+            {
+                'family': row[0],
+                'species': row[1],
+                'location': row[2]
             }
             for row in rows
         ]
