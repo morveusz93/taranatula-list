@@ -54,7 +54,7 @@ Standard response looks like:\
 
 ## How to run the API
 
-1. Download all files
+1. Download all files and install requirements
 2. Create file `database.ini`
 3. The file should looks like:
 
