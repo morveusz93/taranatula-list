@@ -1,6 +1,10 @@
 # TARANTULAS INFO
 This app serves infos about every tarantula at world.
-Datas for create database are scrapped from [The Tarantupedia](https://www.tarantupedia.com/)
+
+Flask app deployed on Heroku.
+Database: PostrgeSQL at ElephantSQL.com
+
+Database crated by scrapping [The Tarantupedia](https://www.tarantupedia.com/)
 
 ## Link
 ### [TARANTULAS](https://tarantulas.herokuapp.com/tarantulas)
