@@ -1,6 +1,7 @@
 from db_connection import connect
 from flask import Flask, jsonify, make_response, abort
 
+HOSTNAME = 'https://tarantulas.herokuapp.com'
 
 app = Flask(__name__)
 
@@ -19,10 +20,10 @@ def not_found(error):
 @app.route('/tarantulas')
 def index():
     routes = {
-        'list of families': '[hostname]/tarantulas/families',
-        'list of genus in family': '[hostname]/tarantulas/family/<name of family>',
-        'list of species in genus': '[hostname]/tarantulas/genus/<name of genus>',
-        'list of species in location': '[hostname]/tarantulas/location/<name of location>',
+        'list of families': f'{HOSTNAME}/tarantulas/families',
+        'list of genus in family': f'{HOSTNAME}/tarantulas/family/<name of family>',
+        'list of species in genus': f'{HOSTNAME}/tarantulas/genus/<name of genus>',
+        'list of species in location': f'{HOSTNAME}/tarantulas/location/<name of location>',
     }
     return(jsonify(routes))
 
@@ -35,7 +36,7 @@ def get_families():
             {
             'name': row[0],
             'numberOfSpecies': row[1],
-            'genusList': f'/tarantulas/family/{row[0].lower()}'
+            'genusList': f'{HOSTNAME}/tarantulas/family/{row[0].lower()}'
             }
         for row in rows
     ]}
@@ -54,7 +55,7 @@ def get_family(name):
                 'family': name,
                 'genus': row[0],
                 'numberOfSpecies': row[1],
-                'speciesList': f'/tarantulas/genus/{row[0].lower()}'
+                'speciesList': f'{HOSTNAME}/tarantulas/genus/{row[0].lower()}'
             }
             for row in rows
         ]
