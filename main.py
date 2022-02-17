@@ -12,6 +12,10 @@ def not_found(error):
 def not_found(error):
     return make_response(jsonify({'error': 'Not found'}), 404)
 
+@app.errorhandler(500)
+def not_found(error):
+    return make_response(jsonify({'error': 'Server error'}), 500)
+
 @app.route('/tarantulas')
 def index():
     routes = {
