@@ -51,20 +51,3 @@ Standard response looks like:\
   ]
 }
 ```
-
-## How to run the API
-
-1. Download all files and install requirements
-2. Create file `database.ini`
-3. The file should looks like:
-
-```
-[postgresql]
-host=YOURHOSTNAME
-database=YOURDATABASENAME
-user=YOURUSERNAME
-password=YOURPASSWORD
-```
-4. run program with:\
-`python main.py`
-5. Where can you get data? Some day I will setup a database and paste the link here. For now - it;s just a portfolio project ;)
